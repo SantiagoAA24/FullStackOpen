@@ -1,30 +1,60 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
-import Note from './components/Notes'
+import Note from './components/Note'
+import noteService from './services/notes'
 import './App.css'
 
-const App = (props) => {
-  const [notes, setNotes] = useState(props.notes)
-  const [newNote, setNewNote] = useState(
-    'A new note...'
-  )
+const App = () => {
+  const [notes, setNotes] = useState([])
+  const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
+
+  // Fetch the notes from the server
+  const hook = () => {
+	  noteService
+      .getAll()
+      .then(initialNotes => {
+        setNotes(initialNotes)
+      })
+	}
+	
+  useEffect(hook, [])  // this is executed immediately after rendering
+	console.log('render', notes.length, 'notes')
+
+  // Filter the notes to show
+  const notesToShow = showAll
+  ? notes
+  : notes.filter(note => note.important)
+
+  // Toggle the importance of the note
+  const toggleImportanceOf = id => {
+    const url = `http://localhost:3001/notes/${id}`
+    const note = notes.find(n => n.id === id)
+    const changedNote = { ...note, important: !note.important }
   
-	const notesToShow = showAll
-	  ? notes
-	  : notes.filter(note => note.important)
+    noteService
+      .update(id, changedNote)
+      .then(returnedNote => {
+        setNotes(notes.map(note => note.id === id ? returnedNote : note))
+      })
+  }
   
   // Event handler of the form
-  const addNote = (event) => {
-	  event.preventDefault()
-	  const noteObject = {
-	    content: newNote,
-	    important: Math.random() < 0.5,
-	    id: notes.length + 1,
-	  }
-	  setNotes(notes.concat(noteObject))
-	  setNewNote('')
-	}
+  const addNote = event => {
+    event.preventDefault()
+    const noteObject = {
+      content: newNote,
+      important: Math.random() > 0.5,
+    }
+  
+    noteService
+      .create(noteObject)
+      .then(returnedNote => {
+        setNotes(notes.concat(returnedNote))
+        setNewNote('')
+      })
+  }
   
   // Event handler of the input box
   const handleNoteChange = (event) => {
@@ -42,7 +72,11 @@ const App = (props) => {
       </div>
       <ul>
         {notesToShow.map(note => 
-          <Note key={note.id} note={note} />
+          <Note
+            key={note.id}
+            note={note}
+            toggleImportance={() => toggleImportanceOf(note.id)}
+          />
         )}
       </ul>
       <form onSubmit={addNote}>
