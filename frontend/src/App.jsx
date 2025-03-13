@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 
 import Note from './components/Note'
 import noteService from './services/notes'
-import './App.css'
 
 const App = () => {
   const [notes, setNotes] = useState([])
@@ -61,14 +60,14 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h1>Notes</h1>
-      <div>
-        <button onClick={() => setShowAll(!showAll)}>
+    <div className='container'>
+      <h1 className='my-3'>Notes</h1>
+      <div className='mb-5'>
+        <button className='btn btn-primary' onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all' }
         </button>
       </div>
-      <ul>
+      <ul className='list-group d-flex flex-column gap-2 my-3'>
         {notesToShow.map(note => 
           <Note
             key={note.id}
@@ -79,10 +78,11 @@ const App = () => {
       </ul>
       <form onSubmit={addNote}>
         <input
+          className='form-control my-3'
           value={newNote}
           onChange={handleNoteChange}
         />
-        <button type="submit">save</button>
+        <button className='btn btn-primary' type="submit">save</button>
       </form>
     </div>
   )

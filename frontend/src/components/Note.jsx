@@ -3,9 +3,9 @@ const Note = ({ note, toggleImportance }) => {
     ? 'make not important' : 'make important'
 
   return (
-    <li>
+    <li className="d-flex justify-content-between">
       {note.content}
-      <button onClick={toggleImportance}>{label}</button>
+      <button className="btn btn-secondary" onClick={toggleImportance}>{label}</button>
     </li>
   )
 }
