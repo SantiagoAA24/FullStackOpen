@@ -3,8 +3,9 @@ const cors = require('cors')
 
 const app = express()
 
-app.use(express.json())  // Middleware to parse JSON data
-app.use(cors())          // Middleware to allow cross-origin requests
+app.use(express.json())          // Middleware to parse JSON data
+app.use(cors())                  // Middleware to allow cross-origin requests
+app.use(express.static('dist'))  // Middleware to serve static files
 
 let notes = [
   {
